@@ -1,0 +1,17 @@
+{
+  "version": "3.4",
+  "type": "table",
+  "title": "zzz",
+  "hideInSidebar": false,
+  "config": {
+    "dataSource": "postgres_db_rvja53",
+    "fetchStrategy": "databaseTable",
+    "table": "users",
+    "columns": [
+      {
+        "column": "id",
+        "hiddenInForm": true
+      }
+    ]
+  }
+}

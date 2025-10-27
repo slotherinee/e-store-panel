@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
+id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email     String   @unique
   password  String
   name      String
@@ -28,7 +28,7 @@ enum Role {
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String
   description String?
   price       Float
@@ -44,8 +44,8 @@ model Product {
 }
 
 model Cart {
-  id        String   @id @default(uuid())
-  userId    String   @unique
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @unique @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -56,9 +56,9 @@ model Cart {
 }
 
 model CartItem {
-  id        String   @id @default(uuid())
-  cartId    String
-  productId String
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cartId    String   @db.Uuid
+  productId String   @db.Uuid
   quantity  Int      @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -71,8 +71,8 @@ model CartItem {
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  userId    String
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String      @db.Uuid
   total     Float
   status    OrderStatus @default(PENDING)
   createdAt DateTime    @default(now())
@@ -92,9 +92,9 @@ enum OrderStatus {
 }
 
 model OrderItem {
-  id        String   @id @default(uuid())
-  orderId   String
-  productId String
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId   String   @db.Uuid
+  productId String   @db.Uuid
   quantity  Int
   price     Float
   createdAt DateTime @default(now())
