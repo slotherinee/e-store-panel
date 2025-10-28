@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { reactAdminMiddleware } from "./middleware/reactAdmin.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -18,7 +19,11 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(
+  cors({
+    exposedHeaders: ["Content-Range", "X-Total-Count"],
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -32,6 +37,8 @@ app.get("/", (req, res) => {
 app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "E-Store API is running" });
 });
+
+app.use("/api", reactAdminMiddleware);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);

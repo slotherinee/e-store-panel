@@ -79,16 +79,6 @@
               >
                 👤 <span class="hidden sm:inline" x-text="user.name"></span>
               </button>
-              <template x-if="user.role === 'ADMIN'">
-                <button
-                  @click="navigateTo('admin')"
-                  :class="page === 'admin' ? 'bg-gray-900 text-white' : 'bg-gray-700 text-white hover:bg-gray-800'"
-                  class="px-3 sm:px-4 py-2 rounded-xl transition font-medium text-sm sm:text-base"
-                >
-                  <span class="hidden sm:inline">⚙️ Админ</span>
-                  <span class="sm:hidden">⚙️</span>
-                </button>
-              </template>
               <button
                 @click="logout()"
                 class="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-medium text-sm sm:text-base"
@@ -275,27 +265,17 @@
         <template x-if="user && page === 'home'">
           <div class="page-transition">
             <!-- Search and Filter Bar -->
-            <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div class="flex-1 max-w-2xl">
-                <div class="relative">
-                  <input
-                    type="text"
-                    x-model="searchQuery"
-                    @input="searchProducts()"
-                    placeholder="Поиск товаров..."
-                    class="w-full px-6 py-4 pl-12 border-2 border-gray-300 rounded-2xl focus:outline-none focus:border-gray-900 transition shadow-sm bg-white"
-                  />
-                  <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl">🔍</span>
-                </div>
+            <div class="mb-8">
+              <div class="relative max-w-2xl">
+                <input
+                  type="text"
+                  x-model="searchQuery"
+                  @input="searchProducts()"
+                  placeholder="Поиск товаров..."
+                  class="w-full px-6 py-4 pl-12 border-2 border-gray-300 rounded-2xl focus:outline-none focus:border-gray-900 transition shadow-sm bg-white"
+                />
+                <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl">🔍</span>
               </div>
-              <template x-if="user.role === 'ADMIN'">
-                <button
-                  @click="navigateTo('product-form')"
-                  class="px-6 py-4 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition shadow-lg hover:shadow-xl font-semibold whitespace-nowrap"
-                >
-                  ➕ Добавить товар
-                </button>
-              </template>
             </div>
 
             <!-- Quick Stats for logged in users -->
@@ -374,24 +354,10 @@
                         @click="addToCart(product.id)"
                         :disabled="product.stock === 0"
                         :class="product.stock === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800 shadow-lg hover:shadow-xl'"
-                        class="flex-1 px-5 py-3 text-white rounded-2xl transition font-semibold"
+                        class="w-full px-5 py-3 text-white rounded-2xl transition font-semibold"
                       >
                         🛒 В корзину
                       </button>
-                      <template x-if="user && user.role === 'ADMIN'">
-                        <button
-                          @click="editProduct(product)"
-                          class="px-4 py-3 bg-gray-200 text-gray-700 rounded-2xl hover:bg-gray-300 transition"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          @click="deleteProduct(product.id)"
-                          class="px-4 py-3 bg-gray-200 text-gray-700 rounded-2xl hover:bg-gray-300 transition"
-                        >
-                          🗑️
-                        </button>
-                      </template>
                     </div>
                   </div>
                 </div>
@@ -404,19 +370,11 @@
                 @click="navigateTo('orders')"
                 class="px-8 py-4 bg-gray-800 text-white rounded-2xl hover:bg-gray-700 transition font-semibold shadow-lg hover:shadow-xl"
               >
-                  📋 Мои заказы
-                </button>
-                <template x-if="user.role === 'ADMIN'">
-                  <button
-                    @click="navigateTo('admin')"
-                    class="px-8 py-4 bg-gray-700 text-white rounded-2xl hover:bg-gray-600 transition font-semibold shadow-lg hover:shadow-xl"
-                  >
-                    ⚙️ Админ-панель
-                  </button>
-                </template>
-              </div>
+                📋 Мои заказы
+              </button>
             </div>
           </div>
+        </template>
         </template>
 
         <!-- Cart Page -->
@@ -691,221 +649,6 @@
           </div>
         </template>
 
-        <!-- Admin Panel Page -->
-        <template x-if="page === 'admin'">
-          <div class="page-transition">
-            <div class="mb-6">
-              <button @click="navigateTo('home')" class="text-gray-900 hover:text-gray-700 mb-4 font-medium">
-                ← Назад к товарам
-              </button>
-              <h2 class="text-3xl font-bold text-gray-900">Админ-панель</h2>
-              <p class="text-gray-600 mt-1">Управление пользователями и заказами</p>
-            </div>
-
-            <div class="mb-6">
-              <div class="flex space-x-2 border-b border-gray-200">
-                <button
-                  @click="adminView = 'users'"
-                  :class="adminView === 'users' ? 'border-b-2 border-gray-900 text-gray-900' : 'text-gray-600'"
-                  class="px-6 py-3 font-medium transition"
-                >
-                  👥 Пользователи
-                </button>
-                <button
-                  @click="adminView = 'orders'"
-                  :class="adminView === 'orders' ? 'border-b-2 border-gray-900 text-gray-900' : 'text-gray-600'"
-                  class="px-6 py-3 font-medium transition"
-                >
-                  📦 Все заказы
-                </button>
-              </div>
-            </div>
-
-            <div x-show="adminView === 'users'">
-              <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
-                <table class="min-w-full">
-                  <thead class="bg-gray-900 text-white">
-                    <tr>
-                      <th class="px-6 py-4 text-left text-sm font-semibold uppercase">Имя</th>
-                      <th class="px-6 py-4 text-left text-sm font-semibold uppercase">Email</th>
-                      <th class="px-6 py-4 text-left text-sm font-semibold uppercase">Роль</th>
-                      <th class="px-6 py-4 text-left text-sm font-semibold uppercase">Регистрация</th>
-                      <th class="px-6 py-4 text-left text-sm font-semibold uppercase">Действия</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-200">
-                    <template x-for="user in allUsers" :key="user.id">
-                      <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900" x-text="user.name"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-600" x-text="user.email"></td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span
-                            :class="user.role === 'ADMIN' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-800'"
-                            class="px-2 py-1 rounded text-sm font-medium"
-                            x-text="user.role"
-                          ></span>
-                        </td>
-                        <td
-                          class="px-6 py-4 whitespace-nowrap text-gray-600"
-                          x-text="new Date(user.createdAt).toLocaleDateString('ru-RU')"
-                        ></td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <button
-                            @click="deleteUser(user.id)"
-                            class="px-4 py-2 bg-gray-700 text-white rounded-2xl hover:bg-gray-600 transition"
-                          >
-                            🗑️ Удалить
-                          </button>
-                        </td>
-                      </tr>
-                    </template>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div x-show="adminView === 'orders'">
-              <div class="space-y-4">
-                <template x-for="order in allOrders" :key="order.id">
-                  <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
-                    <div class="flex justify-between items-start mb-4">
-                      <div>
-                        <p class="text-sm text-gray-500">
-                          ID заказа:
-                          <span class="font-mono text-gray-700" x-text="order.id.substring(0, 8)"></span>...
-                        </p>
-                        <p class="text-sm text-gray-600 mt-1">
-                          👤 Пользователь: <span class="font-medium" x-text="order.user.name"></span> (<span
-                            x-text="order.user.email"
-                          ></span
-                          >)
-                        </p>
-                        <p class="text-sm text-gray-500 mt-1">
-                          📅
-                          <span
-                            x-text="new Date(order.createdAt).toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' })"
-                          ></span>
-                        </p>
-                      </div>
-                      <div class="text-right">
-                        <select
-                          @change="updateOrderStatus(order.id, $event.target.value)"
-                          :value="order.status"
-                          class="px-3 py-2 border-2 border-gray-300 rounded-2xl text-sm font-medium focus:outline-none focus:border-gray-900 transition"
-                        >
-                          <option value="PENDING">PENDING</option>
-                          <option value="PROCESSING">PROCESSING</option>
-                          <option value="COMPLETED">COMPLETED</option>
-                          <option value="CANCELLED">CANCELLED</option>
-                        </select>
-                        <p class="text-2xl font-bold text-gray-900 mt-2">
-                          <span x-text="order.total.toFixed(2)"></span> ₽
-                        </p>
-                      </div>
-                    </div>
-                    <div class="border-t pt-4">
-                      <template x-for="item in order.items" :key="item.id">
-                        <div class="flex justify-between py-2 text-gray-600">
-                          <span
-                            >📦 <span x-text="item.product.name"></span>
-                            <span class="text-gray-400">x<span x-text="item.quantity"></span></span
-                          ></span>
-                          <span class="font-medium"
-                            >$<span x-text="(item.price * item.quantity).toFixed(2)"></span
-                          ></span>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
-                </template>
-              </div>
-            </div>
-          </div>
-        </template>
-
-        <!-- Product Form Page (Add/Edit Product) -->
-        <template x-if="page === 'product-form'">
-          <div class="page-transition max-w-2xl mx-auto">
-            <div class="mb-6">
-              <button @click="navigateTo('home')" class="text-gray-900 hover:text-gray-700 mb-4 font-medium">
-                ← Назад к товарам
-              </button>
-              <h2
-                class="text-3xl font-bold text-gray-900"
-                x-text="editingProduct ? 'Редактировать товар' : 'Добавить новый товар'"
-              ></h2>
-              <p class="text-gray-600 mt-1">Заполните информацию о товаре</p>
-            </div>
-
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
-              <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-2">Название товара</label>
-                <input
-                  type="text"
-                  x-model="productForm.name"
-                  placeholder="Введите название"
-                  class="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:border-gray-900 transition"
-                />
-              </div>
-              <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-2">Описание</label>
-                <textarea
-                  x-model="productForm.description"
-                  placeholder="Опишите товар..."
-                  class="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:border-gray-900 transition"
-                  rows="4"
-                ></textarea>
-              </div>
-              <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label class="block text-gray-700 font-medium mb-2">Цена (₽)</label>
-                  <input
-                    type="numeric"
-                    x-model.number="productForm.price"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:border-gray-900 transition"
-                  />
-                </div>
-                <div>
-                  <label class="block text-gray-700 font-medium mb-2">Количество на складе</label>
-                  <input
-                    type="numeric"
-                    x-model.number="productForm.stock"
-                    min="0"
-                    placeholder="0"
-                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:border-gray-900 transition"
-                  />
-                </div>
-              </div>
-              <div class="mb-6">
-                <label class="block text-gray-700 font-medium mb-2">URL изображения (опционально)</label>
-                <input
-                  type="text"
-                  x-model="productForm.imageUrl"
-                  placeholder="https://example.com/image.jpg"
-                  class="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:border-gray-900 transition"
-                />
-              </div>
-              <div class="flex space-x-3">
-                <button
-                  @click="saveProduct()"
-                  class="flex-1 px-6 py-3 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition font-medium"
-                >
-                  💾 Сохранить товар
-                </button>
-                <button
-                  @click="navigateTo('home'); editingProduct = null"
-                  class="px-6 py-3 bg-gray-300 text-gray-700 rounded-2xl hover:bg-gray-400 transition font-medium"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </template>
-
         </div>
         <!-- End of content wrapper -->
       </div>
@@ -920,26 +663,15 @@
           token: localStorage.getItem("token") || null,
           user: null,
           page: "home",
-          adminView: "users",
-          editingProduct: null,
           searchQuery: "",
           products: [],
           cart: { items: [] },
           orders: [],
-          allUsers: [],
-          allOrders: [],
           alert: { show: false, message: "", type: "success" },
           loginForm: { email: "", password: "" },
           registerForm: { name: "", email: "", password: "" },
           profileForm: { name: "", email: "" },
           passwordForm: { currentPassword: "", newPassword: "" },
-          productForm: {
-            name: "",
-            description: "",
-            price: 0,
-            stock: 0,
-            imageUrl: "",
-          },
 
           init() {
             if (this.token) {
@@ -960,9 +692,6 @@
               this.loadCart();
             } else if (page === "orders" && this.user) {
               this.loadOrders();
-            } else if (page === "admin" && this.user && this.user.role === "ADMIN") {
-              this.loadAllUsers();
-              this.loadAllOrders();
             } else if (page === "profile" && this.user) {
               this.profileForm = { name: this.user.name, email: this.user.email };
             }
@@ -1090,10 +819,6 @@
               this.profileForm = { name: this.user.name, email: this.user.email };
               this.loadCart();
               this.loadOrders();
-              if (this.user.role === "ADMIN") {
-                this.loadAllUsers();
-                this.loadAllOrders();
-              }
             } catch (error) {
               this.logout();
             }
@@ -1147,77 +872,6 @@
               }
             } catch (error) {
               console.error(error);
-            }
-          },
-
-          editProduct(product) {
-            this.editingProduct = product;
-            this.productForm = {
-              name: product.name,
-              description: product.description || "",
-              price: product.price,
-              stock: product.stock,
-              imageUrl: product.imageUrl || "",
-            };
-            this.navigateTo("product-form");
-          },
-
-          async saveProduct() {
-            try {
-              // Преобразуем типы данных перед отправкой
-              const productData = {
-                name: this.productForm.name,
-                description: this.productForm.description || "",
-                price: parseFloat(this.productForm.price),
-                stock: parseInt(this.productForm.stock),
-                imageUrl: this.productForm.imageUrl || "",
-              };
-
-              // Валидация на клиенте
-              if (!productData.name || productData.name.trim() === '') {
-                this.showAlert("Название товара обязательно", "error");
-                return;
-              }
-              if (isNaN(productData.price) || productData.price <= 0) {
-                this.showAlert("Цена должна быть положительным числом", "error");
-                return;
-              }
-              if (isNaN(productData.stock) || productData.stock < 0) {
-                this.showAlert("Количество должно быть неотрицательным числом", "error");
-                return;
-              }
-
-              if (this.editingProduct) {
-                await this.apiCall(`/products/${this.editingProduct.id}`, "PUT", productData);
-                this.showAlert("Товар успешно обновлен!");
-              } else {
-                await this.apiCall("/products", "POST", productData);
-                this.showAlert("Товар успешно создан!");
-              }
-              this.editingProduct = null;
-              this.productForm = {
-                name: "",
-                description: "",
-                price: 0,
-                stock: 0,
-                imageUrl: "",
-              };
-              this.navigateTo("home");
-              this.loadProducts();
-            } catch (error) {
-              console.error(error);
-            }
-          },
-
-          async deleteProduct(id) {
-            if (confirm("Вы уверены, что хотите удалить этот товар?")) {
-              try {
-                await this.apiCall(`/products/${id}`, "DELETE");
-                this.showAlert("Товар успешно удален!");
-                this.loadProducts();
-              } catch (error) {
-                console.error(error);
-              }
             }
           },
 
@@ -1314,43 +968,6 @@
             }
           },
 
-          async loadAllUsers() {
-            try {
-              this.allUsers = await this.apiCall("/users");
-            } catch (error) {
-              console.error(error);
-            }
-          },
-
-          async deleteUser(userId) {
-            if (confirm("Вы уверены, что хотите удалить этого пользователя?")) {
-              try {
-                await this.apiCall(`/users/${userId}`, "DELETE");
-                this.showAlert("Пользователь успешно удален!");
-                this.loadAllUsers();
-              } catch (error) {
-                console.error(error);
-              }
-            }
-          },
-
-          async loadAllOrders() {
-            try {
-              this.allOrders = await this.apiCall("/orders/admin/all");
-            } catch (error) {
-              console.error(error);
-            }
-          },
-
-          async updateOrderStatus(orderId, status) {
-            try {
-              await this.apiCall(`/orders/${orderId}/status`, "PUT", { status });
-              this.showAlert("Статус заказа обновлен!");
-              this.loadAllOrders();
-            } catch (error) {
-              console.error(error);
-            }
-          },
         };
       }
     </script>
